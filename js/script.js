@@ -14,46 +14,148 @@
 
 "use strict";
 
-const movieDB = {
-  movies: [
-    "Логан",
-    "Лига справедливости",
-    "Ла-ла лэнд",
-    "Одержимость",
-    "Скотт Пилигрим против..."
-  ]
-};
+// const movieDB = {
+//   movies: [
+//     "Логан",
+//     "Лига справедливости",
+//     "Ла-ла лэнд",
+//     "Одержимость",
+//     "Скотт Пилигрим против..."
+//   ]
+// };
 
 
-const adv = document.querySelectorAll('.promo__adv img'),
-  promo = document.querySelector('.promo__bg'),
-  genre = document.querySelector('.promo__genre'),
-  list = document.querySelector('.promo__interactive-list');
+// const adv = document.querySelectorAll('.promo__adv img'),
+//   promo = document.querySelector('.promo__bg'),
+//   genre = document.querySelector('.promo__genre'),
+//   list = document.querySelector('.promo__interactive-list');
 
-adv.forEach(item => {
-  item.remove();
-});
+// adv.forEach(item => {
+//   item.remove();
+// });
 
-genre.textContent = 'драма';
+// genre.textContent = 'драма';
 
-promo.style.backgroundImage = 'url("img/bg.jpg")';
+// promo.style.backgroundImage = 'url("img/bg.jpg")';
 
-list.innerHTML = '';
+// list.innerHTML = '';
 
-movieDB.movies.sort();
+// movieDB.movies.sort();
 
-movieDB.movies.forEach((film, i) => {
-  list.innerHTML += `
+// movieDB.movies.forEach((film, i) => {
+//   list.innerHTML += `
+//     <li class="promo__interactive-item">${i + 1} ${film}
+//       <div class="delete"></div>
+//     </li>
+//   `;
+// });
+
+/* Задания на урок:
+
+1) Реализовать функционал, что после заполнения формы и нажатия кнопки "Подтвердить" - 
+новый фильм добавляется в список. Страница не должна перезагружаться.
+Новый фильм должен добавляться в movieDB.movies.
+Для получения доступа к значению input - обращаемся к нему как input.value;
+P.S. Здесь есть несколько вариантов решения задачи, принимается любой, но рабочий.
+
+2) Если название фильма больше, чем 21 символ - обрезать его и добавить три точки
+
+3) При клике на мусорную корзину - элемент будет удаляться из списка (сложно)
+
+4) Если в форме стоит галочка "Сделать любимым" - в консоль вывести сообщение: 
+"Добавляем любимый фильм"
+
+5) Фильмы должны быть отсортированы по алфавиту */
+
+
+// Возьмите свой код из предыдущей практики
+
+document.addEventListener('DOMContentLoaded', () => {
+  const movieDB = {
+    movies: [
+      "Логан",
+      "Лига справедливости",
+      "Ла-ла лэнд",
+      "Одержимость",
+      "Скотт Пилигрим против..."
+    ]
+  };
+
+
+  const adv = document.querySelectorAll('.promo__adv img'),
+    promo = document.querySelector('.promo__bg'),
+    genre = document.querySelector('.promo__genre'),
+    list = document.querySelector('.promo__interactive-list'),
+    addForm = document.querySelector('form.add'),
+    addInput = addForm.querySelector('.adding__input'),
+    checkbox = addForm.querySelector('[type="checkbox"]');
+
+  addForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    let newFilm = addInput.value;
+    const favorite = checkbox.checked;
+
+    if (favorite) {
+      console.log("Добавляем любимый фильм");
+    }
+
+    if (newFilm) {
+
+      if (newFilm.length > 21) {
+        newFilm = `${newFilm.substring(0, 22)}...`;
+      }
+
+      movieDB.movies.push(newFilm);
+      sortArr(movieDB.movies);
+
+      createMovieList(movieDB.movies, list);
+    }
+
+    event.target.reset();
+  });
+
+  const deleteAdv = (arr) => {
+    arr.forEach(item => {
+      item.remove();
+    });
+  };
+
+  const makeChanges = () => {
+    genre.textContent = 'драма';
+
+    promo.style.backgroundImage = 'url("img/bg.jpg")';
+  };
+
+  const sortArr = (arr) => {
+    arr.sort();
+  };
+
+  function createMovieList(films, parent) {
+    parent.innerHTML = '';
+    sortArr(films);
+
+    films.forEach((film, i) => {
+      parent.innerHTML += `
     <li class="promo__interactive-item">${i + 1} ${film}
       <div class="delete"></div>
     </li>
   `;
+    });
+
+    document.querySelectorAll('.delete').forEach((btn, i) => {
+      btn.addEventListener('click', () => {
+        btn.parentElement.remove();
+        movieDB.movies.splice(i, 1);
+
+        createMovieList(films, parent);
+      });
+    });
+  }
+
+  deleteAdv(adv);
+  makeChanges();
+  createMovieList(movieDB.movies, list);
+
 });
-
-
-
-
-
-
-
 
